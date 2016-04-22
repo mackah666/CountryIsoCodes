@@ -16,7 +16,11 @@ namespace ConsoleElasticSearch
 
         static void Main(string[] args)
         {
-           
+
+            var isoCodeDictionary = new Dictionary<string, CountryIsoCode>();
+
+            
+
 
             var geoLocations = new List<GeoLocation>();
 
@@ -26,7 +30,7 @@ namespace ConsoleElasticSearch
             List<GeoLocation> geoLocations2;
             try
             {
-                using (StreamReader readFile = new StreamReader(@"D:\longlat\Country_List_ISO_3166_Codes.csv"))
+                using (StreamReader readFile = new StreamReader(@"D:\longlat\Country_Dict_ISO_3166_Codes.csv"))
                 {
                     string line;
                     string[] row;
@@ -37,7 +41,7 @@ namespace ConsoleElasticSearch
                     while ((line = readFile.ReadLine()) != null)
                     {
                         row = line.Split(',');
-                        countryIsoCodes.Add(new CountryIsoCode {
+                        isoCodeDictionary.Add(row[1],new CountryIsoCode {
                             Country = row[0],
                             AlphaTwoCode = row[1],
                             AlphaThreeCode = row[2],
@@ -45,13 +49,8 @@ namespace ConsoleElasticSearch
                             Longitude = row[5]
 
                         });
-                        //geoLocations.Add( new GeoLocation {
-                        //    IsoCode = row[0],
-                        //    Latitude = row[1],
-                        //    Longitude = row[2]
-                        //});
-
-                        Console.WriteLine(string.Format("Processed row number => {0}", ++rowcount));
+                        Console.WriteLine(row[1]);
+                       
                     }
                 }
             }
@@ -64,7 +63,7 @@ namespace ConsoleElasticSearch
 
             try
             {
-                using (Stream stream = File.Open("data_full.bin", FileMode.Create))
+                using (Stream stream = File.Open("data_full_dict.bin", FileMode.Create))
                 {
                     BinaryFormatter bin = new BinaryFormatter();
                     bin.Serialize(stream, countryIsoCodes);
@@ -76,23 +75,12 @@ namespace ConsoleElasticSearch
 
             try
             {
-                using (Stream stream = File.Open("data_full.bin", FileMode.Open))
+                using (Stream stream = File.Open("data_full_dict.bin", FileMode.Open))
                 {
                     BinaryFormatter bin = new BinaryFormatter();
 
                     countryIsoCodes2 = (List<CountryIsoCode>)bin.Deserialize(stream);
-
-
-                    CountryIsoCode result = countryIsoCodes2.Single(s => s.AlphaTwoCode == "GB");
-
-                    Console.WriteLine(result.Country);
-                    //foreach (GeoLocation geolocation in geoLocations2)
-                    //{
-                    //    Console.WriteLine("{0}, {1}, {2}",
-                    //        geolocation.IsoCode,
-                    //        geolocation.Latitude,
-                    //        geolocation.Longitude);
-                    //}
+                   
                 }
             }
             catch (IOException)
