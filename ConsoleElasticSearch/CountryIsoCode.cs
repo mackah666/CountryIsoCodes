@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace ConsoleElasticSearch
 {
-    class CountryIsoCode
+    [Serializable]
+    public class CountryIsoCode
     {
         public string Country { get; set; }
         public string AlphaTwoCode { get; set; }

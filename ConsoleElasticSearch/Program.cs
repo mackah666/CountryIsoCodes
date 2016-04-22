@@ -23,40 +23,54 @@ namespace ConsoleElasticSearch
 
             var geoLocations = new List<GeoLocation>();
 
+            var countryIsoCodes = new List<CountryIsoCode>();
+            List<CountryIsoCode> countryIsoCodes2;
+
             List<GeoLocation> geoLocations2;
             try
             {
-                using (StreamReader readFile = new StreamReader(@"D:\longlat\isocodes.csv"))
+                using (StreamReader readFile = new StreamReader(@"D:\longlat\Country_List_ISO_3166_Codes.csv"))
                 {
                     string line;
                     string[] row;
                     int rowcount = 0;
+                    //Country,  alpha2, alpha3, numeric, Latitude, Longitude
+                    //Albania,  AL,     ALB,    8,       41,       20,
 
                     while ((line = readFile.ReadLine()) != null)
                     {
                         row = line.Split(',');
-                        geoLocations.Add( new GeoLocation {
-                            IsoCode = row[0],
-                            Latitude = row[1],
-                            Longitude = row[2]
+                        countryIsoCodes.Add(new CountryIsoCode {
+                            Country = row[0],
+                            AlphaTwoCode = row[1],
+                            AlphaThreeCode = row[2],
+                            Latitude = row[4],
+                            Longitude = row[5]
+
                         });
+                        //geoLocations.Add( new GeoLocation {
+                        //    IsoCode = row[0],
+                        //    Latitude = row[1],
+                        //    Longitude = row[2]
+                        //});
 
                         Console.WriteLine(string.Format("Processed row number => {0}", ++rowcount));
                     }
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                Console.WriteLine(e.Message);
+                //_log.ErrorFormat(
+                _log.ErrorFormat("My {0} message: {1}", "pretty", ex);
             }
 
 
             try
             {
-                using (Stream stream = File.Open("data.bin", FileMode.Create))
+                using (Stream stream = File.Open("data_full.bin", FileMode.Create))
                 {
                     BinaryFormatter bin = new BinaryFormatter();
-                    bin.Serialize(stream, geoLocations);
+                    bin.Serialize(stream, countryIsoCodes);
                 }
             }
             catch (IOException)
@@ -65,14 +79,16 @@ namespace ConsoleElasticSearch
 
             try
             {
-                using (Stream stream = File.Open("data.bin", FileMode.Open))
+                using (Stream stream = File.Open("data_full.bin", FileMode.Open))
                 {
                     BinaryFormatter bin = new BinaryFormatter();
 
-                    geoLocations2 = (List<GeoLocation>)bin.Deserialize(stream);
+                    countryIsoCodes2 = (List<CountryIsoCode>)bin.Deserialize(stream);
 
 
-                    GeoLocation result = geoLocations2.Single(s => s.IsoCode == "GB");
+                    CountryIsoCode result = countryIsoCodes2.Single(s => s.AlphaTwoCode == "GB");
+
+                    Console.WriteLine(result.Country);
                     //foreach (GeoLocation geolocation in geoLocations2)
                     //{
                     //    Console.WriteLine("{0}, {1}, {2}",
