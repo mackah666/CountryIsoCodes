@@ -16,10 +16,7 @@ namespace ConsoleElasticSearch
 
         static void Main(string[] args)
         {
-            for (int i = 1; i < 100; i++)
-            {
-                _log.Info("console test log " + i);  
-            }
+           
 
             var geoLocations = new List<GeoLocation>();
 
